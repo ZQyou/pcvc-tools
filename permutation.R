@@ -7,6 +7,11 @@ source("pcprofiles.R")
 
 permutation <- function(pc_csv_file, thresh=1.0, num_random=1){
 
+if(num_random < 0){
+  cat("\nnum_random can not be negative\n")
+  stop()
+}
+
 vr <- ViralRef()
 vr <- pcprofiles(pc_csv_file,thresh,"",doNeg=TRUE)
 
@@ -19,9 +24,17 @@ num_perm     <- length(perm_vec)
 perm_pairs   <- t(contig_pairs[,perm_vec])
 #cat(sprintf("Number of pairs with Sig. less than %.1f: %d\n",thresh,num_perm))
 
-cat("\nStarting randomization test .....\n")
+if(num_random == 0){
+  cat("\nRunning randomization test until one case found\n")
+}else{
+  cat("\nRunning randomization test for",num_random,"times\n")
+}
 # Randomization 
-for(r in 1:num_random){
+num_sig_over_thresh <- 0
+r <- 0
+#for(r in 1:num_random){
+while(1){
+  r <- r + 1
   cat(sprintf("  # of Randomization: %d\n",r))
   ptm           <- proc.time()
   vr@mat        <- apply(vr@mat,2,sample)
@@ -51,9 +64,15 @@ for(r in 1:num_random){
   }
   #print_run_time(ptm)
 
-  cat("  Found",length(which(perm_sig > thresh)),"pair(s) with a Sig. above the threshold\n")
-  #length(which(perm_sig[,3] > 0))
+  num_sig_over_thresh <- length(which(perm_sig > thresh))
+  cat("  Found",num_sig_over_thresh,"pair(s) with a Sig. above the threshold\n")
+  #cat("  Found",length(which(perm_sig > thresh)),"pair(s) with a Sig. above the threshold\n")
 
+  if( (num_random > 0 && r == num_random) || (num_random == 0 && num_sig_over_thresh > 0) ){
+    break
+  }
+
+  #length(which(perm_sig[,3] > 0))
   #perm_csv <- cbind(perm_pairs,perm_sig)
   #colnames(perm_csv) <- c("contig1_id","contig2_id","a","b","c","sig")
   #perm_csv_file <- paste(paste("perm",r,sep="_"),"csv",sep=".")
