@@ -1,0 +1,16 @@
+protein,contig,,pc_id,vc_id
+1,virus1,,pc_01,cc_01
+2,virus1,,pc_02,cc_01
+3,virus1,,pc_03,cc_01
+4,virus1,,,cc_01
+5,virus1,,pc_04,cc_01
+6,virus1,,pc_05,cc_01
+7,virus1,,pc_06,cc_01
+8,virus1,,,cc_01
+9,virus2,,pc_04,cc_01
+10,virus2,,pc_05,cc_01
+11,virus2,,pc_03,cc_01
+12,virus3,,pc_01,cc_03
+13,virus3,,,cc_03
+14,virus3,,pc_10,cc_03
+15,virus3,,,cc_03

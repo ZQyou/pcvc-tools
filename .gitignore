@@ -1,1 +1,6 @@
 *.csv
+!*_test.csv
+*.tsv
+.RData
+.Rhistory
+aeolianine-octave-networks-toolbox-d818511
