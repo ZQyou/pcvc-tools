@@ -17,11 +17,13 @@ class _pcprofile(object):
     def print_percentage(self):
         print("Percentage (%):")
         n = self.contigs.size
-        pct_mat = np.zeros((n,n),int)
+        pct_mat = np.zeros((n,n),)
         for i in xrange(0,n-1):
             for j in xrange(i+1,n):
-                pct_mat[i,j] = 100*self.common_pc[i,j]/(self.common_pc[i,i] + [ 1 if singletons[i] > 0 else 0 ])
-                pct_mat[j,i] = 100*self.common_pc[i,j]/(self.common_pc[j,j] + [ 1 if singletons[j] > 0 else 0 ])
+                pct_mat[i,j] = 100.0*self.common_pc[i,j]/(self.common_pc[i,i] + singletons[i])
+                pct_mat[j,i] = 100.0*self.common_pc[i,j]/(self.common_pc[j,j] + singletons[j])
+#               pct_mat[i,j] = 100*self.common_pc[i,j]/(self.common_pc[i,i] + [ 1 if singletons[i] > 0 else 0 ])
+#               pct_mat[j,i] = 100*self.common_pc[i,j]/(self.common_pc[j,j] + [ 1 if singletons[j] > 0 else 0 ])
         print(pct_mat)
 
         pct_file = open('pct_mat.csv','w')
