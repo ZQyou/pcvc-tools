@@ -56,8 +56,8 @@ def matrix_builder(pcs,contigs):
 
     npc = uniq_pcs.size
     nv = uniq_contigs.size
-    print("Number of Viruses = %d" % npc)
-    print("Number of PCs = %d" % nv)
+    print("Number of Viruses = %d" % nv)
+    print("Number of PCs = %d" % npc)
     print("Number of Singletons = %d" % num_singletons)
 
     pcmat = np.empty((0,npc),int)
