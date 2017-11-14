@@ -1,6 +1,10 @@
 from __future__ import print_function
 import sys
 import numpy as np
+from os import path
+
+
+output_path = ""
 
 class _pcprofile(object):
 
@@ -15,7 +19,7 @@ class _pcprofile(object):
             print("Common PC matrix:\n",self.common_pc)
 
     def print_percentage(self):
-        print("Percentage (%):")
+        print("Percentage Matrix (%):")
         n = self.contigs.size
         pct_mat = np.zeros((n,n),)
         for i in xrange(0,n-1):
@@ -25,12 +29,23 @@ class _pcprofile(object):
 #               pct_mat[i,j] = 100*self.common_pc[i,j]/(self.common_pc[i,i] + [ 1 if singletons[i] > 0 else 0 ])
 #               pct_mat[j,i] = 100*self.common_pc[i,j]/(self.common_pc[j,j] + [ 1 if singletons[j] > 0 else 0 ])
         print(pct_mat)
-
-        pct_file = open('pct_mat.csv','w')
-        pct_file.write(",%s\n" % (",".join(self.contigs)))
+  
+        pct_file = path.join(output_path,'pct_mat.csv')
+        f = open(pct_file,'w')
+        f.write(",%s\n" % (",".join(self.contigs)))
         for i in xrange(0,n):
-            pct_file.write("%s,%s\n" % (self.contigs[i], ",".join(str(x) for x in pct_mat[i,:])))
-        pct_file.close();
+            f.write("%s,%s\n" % (self.contigs[i], ",".join(str(x) for x in pct_mat[i,:])))
+        f.close();
+        print("*** Percentage Matrix CSV file is %s" % pct_file)
+
+        pct_file = path.join(output_path,'pct_table.csv')
+        f = open(pct_file,'w')
+        f.write("virus 1,virus 2,1->2,2->1\n")
+        for i in xrange(0,n-1):
+            for j in xrange(i+1,n):
+                f.write("%s,%s,%.1f,%.1f\n" % (self.contigs[i], self.contigs[j], pct_mat[i,j], pct_mat[j,i]))
+        f.close();
+        print("*** Percentage Table CSV file is %s" % pct_file)
 
 def read_csv(csv_file):
     '''
@@ -79,17 +94,20 @@ def matrix_builder(pcs,contigs):
     print("Singletons:\n",singletons)
 
     print("Contig-PC Matrix:\n",contig_pc_mat)
-    f = open('contig_pc_mat.csv','w')
+    output_file = path.join(output_path,'contig_pc_mat.csv')
+    f = open(output_file,'w')
     f.write(",%s,Singletons\n" % (",".join(uniq_pcs)))
     for i in xrange(0,nv):
         f.write("%s,%s\n" % (uniq_contigs[i], ",".join(str(x) for x in contig_pc_mat[i,:])))
     f.close()
+    print("*** Contig-PC Matrix CSV is %s" % output_file)
 
 
     return [np.matrix(pcmat),uniq_pcs,uniq_contigs,singletons]
 
 if __name__ == '__main__':
     pcs_file = sys.argv[1];
+    output_path = path.dirname(pcs_file) # this is global variable ...
     pcs, contigs = read_csv(pcs_file);
     pcmat, pcs, contigs, singletons = matrix_builder(pcs,contigs)
     pcprofile = _pcprofile(pcmat,singletons,contigs)
