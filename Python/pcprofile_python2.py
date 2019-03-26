@@ -22,8 +22,8 @@ class _pcprofile(object):
         print("Percentage Matrix (%):")
         n = self.contigs.size
         pct_mat = np.zeros((n,n),)
-        for i in range(0,n-1):
-            for j in range(i+1,n):
+        for i in xrange(0,n-1):
+            for j in xrange(i+1,n):
                 pct_mat[i,j] = 100.0*self.common_pc[i,j]/(self.common_pc[i,i] + singletons[i])
                 pct_mat[j,i] = 100.0*self.common_pc[i,j]/(self.common_pc[j,j] + singletons[j])
 #               pct_mat[i,j] = 100*self.common_pc[i,j]/(self.common_pc[i,i] + [ 1 if singletons[i] > 0 else 0 ])
@@ -32,8 +32,8 @@ class _pcprofile(object):
   
         pct_file = path.join(output_path,'pct_mat.csv')
         f = open(pct_file,'w')
-        f.write(",%s\n" % (",".join(self.contigs.astype('U13'))))
-        for i in range(0,n):
+        f.write(",%s\n" % (",".join(self.contigs)))
+        for i in xrange(0,n):
             f.write("%s,%s\n" % (self.contigs[i], ",".join(str(x) for x in pct_mat[i,:])))
         f.close();
         print("*** Percentage Matrix CSV file is %s" % pct_file)
@@ -41,8 +41,8 @@ class _pcprofile(object):
         pct_file = path.join(output_path,'pct_table.csv')
         f = open(pct_file,'w')
         f.write("virus 1,virus 2,1->2,2->1\n")
-        for i in range(0,n-1):
-            for j in range(i+1,n):
+        for i in xrange(0,n-1):
+            for j in xrange(i+1,n):
                 f.write("%s,%s,%.1f,%.1f\n" % (self.contigs[i], self.contigs[j], pct_mat[i,j], pct_mat[j,i]))
         f.close();
         print("*** Percentage Table CSV file is %s" % pct_file)
@@ -64,12 +64,11 @@ def matrix_builder(pcs,contigs):
     '''
     build index matrix and get singletons
     '''
-    singletons_b = pcs.astype('U13') == np.array('')
+    singletons_b = pcs == np.array('')
     num_singletons = np.sum(singletons_b + [0])
     contigs_singletons = contigs[singletons_b]
     uniq_pcs = np.unique(pcs)
-#   uniq_pcs = uniq_pcs[ uniq_pcs != np.array('') ]
-    uniq_pcs = uniq_pcs[ uniq_pcs.astype('U13') != np.array('') ]
+    uniq_pcs = uniq_pcs[ uniq_pcs != np.array('') ]
     uniq_contigs = np.unique(contigs)
 
     npc = uniq_pcs.size
@@ -90,16 +89,15 @@ def matrix_builder(pcs,contigs):
         contig_pc_mat[v,npc] = singletons[v]
         pcmat = np.append(pcmat,np.array([where_pc]),axis=0) 
 
-    print("Viruses:\n",uniq_contigs.astype('U13'))
-    print("PCs:\n",uniq_pcs.astype('U13'))
+    print("Viruses:\n",uniq_contigs)
+    print("PCs:\n",uniq_pcs)
     print("Singletons:\n",singletons)
 
     print("Contig-PC Matrix:\n",contig_pc_mat)
     output_file = path.join(output_path,'contig_pc_mat.csv')
     f = open(output_file,'w')
-#   f.write(",%s,Singletons\n" % (",".join(uniq_pcs)))
-    f.write(",%s,Singletons\n" % (",".join(uniq_pcs.astype('U13'))))
-    for i in range(0,nv):
+    f.write(",%s,Singletons\n" % (",".join(uniq_pcs)))
+    for i in xrange(0,nv):
         f.write("%s,%s\n" % (uniq_contigs[i], ",".join(str(x) for x in contig_pc_mat[i,:])))
     f.close()
     print("*** Contig-PC Matrix CSV is %s" % output_file)
